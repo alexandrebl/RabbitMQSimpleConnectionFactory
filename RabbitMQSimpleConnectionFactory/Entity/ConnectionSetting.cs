@@ -31,6 +31,10 @@
 
         public ConnectionSetting()
         {
+            HostName = "localhost";
+            VirtualHost = "/";
+            UserName = "guest";
+            Password = "guest";
             Port = 5672;
         }
     }

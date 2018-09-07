@@ -5,7 +5,8 @@ namespace RabbitMQSimpleConnectionFactory.Library {
     /// <summary>
     /// Responsável por criar conexões com RabbitMQ
     /// </summary>
-    public static class ChannelFactory {
+    public class ChannelFactory : IChannelFactory
+    {
 
         /// <summary>
         /// Objeto
@@ -27,8 +28,11 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <param name="requestedChannelMax"></param>
         /// <param name="useBackgroundThreadsForIo"></param>
         /// <returns></returns>
-        public static IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true, 
+        public IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true, 
             ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
+
+
+
             var factory = new ConnectionFactory {
                 HostName = connectionConfig.HostName,
                 VirtualHost = connectionConfig.VirtualHost,
@@ -58,7 +62,7 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <summary>
         /// Método responsável por fechar a conexão com RabbitMQ
         /// </summary>
-        public static void CloseConnection() {
+        public void CloseConnection() {
             _connection?.Close();
             _connection?.Dispose();
             _connection = null;
