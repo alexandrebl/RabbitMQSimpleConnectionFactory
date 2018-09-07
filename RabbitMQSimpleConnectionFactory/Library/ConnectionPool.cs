@@ -8,11 +8,14 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         private static int _index;
         private static int _size;
         private static readonly object Sync = new object();
+        private readonly IChannelFactory _channelFactory;
 
-        public ConnectionPool(int size, ConnectionSetting connectionSetting) {
+        public ConnectionPool(int size, ConnectionSetting connectionSetting, IChannelFactory channelFactory) {
             _size = size;
+            _pool = new List<IModel>();
+            _channelFactory = channelFactory;
+            Init(size, connectionSetting, ref _pool);
 
-            Init(size, connectionSetting);
         }
 
         public IModel GetChannel() {
@@ -32,6 +35,10 @@ namespace RabbitMQSimpleConnectionFactory.Library {
             }
         }
 
+        private void Init(int size, ConnectionSetting connectionSetting, ref IList<IModel> pool) {
+            for (var position = 0; position < size; position++) {
+                pool.Add(_channelFactory.Create(connectionSetting));
+            }
         private void Init(int size, ConnectionSetting connectionSetting) {
             lock (Sync) {
                 if (_pool != null) return;
