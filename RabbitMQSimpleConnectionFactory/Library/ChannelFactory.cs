@@ -21,14 +21,25 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// Método cria uma conexão com RabbitMQ
         /// </summary>
         /// <param name="connectionConfig">Configurações de conexão</param>
+        /// <param name="automaticRecoveryEnabled"></param>
+        /// <param name="requestedHeartbeat"></param>
+        /// <param name="requestedFrameMax"></param>
+        /// <param name="requestedChannelMax"></param>
+        /// <param name="useBackgroundThreadsForIo"></param>
         /// <returns></returns>
-        public static IModel Create(ConnectionSetting connectionConfig) {
+        public static IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true, 
+            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
             var factory = new ConnectionFactory {
                 HostName = connectionConfig.HostName,
                 VirtualHost = connectionConfig.VirtualHost,
                 UserName = connectionConfig.UserName,
                 Password = connectionConfig.Password,
-                AutomaticRecoveryEnabled = true
+                Port = connectionConfig.Port,
+                AutomaticRecoveryEnabled = automaticRecoveryEnabled,
+                RequestedHeartbeat = requestedHeartbeat,
+                RequestedFrameMax = requestedFrameMax,
+                RequestedChannelMax = requestedChannelMax,
+                UseBackgroundThreadsForIO = useBackgroundThreadsForIo
             };
 
             if (_connection == null) {

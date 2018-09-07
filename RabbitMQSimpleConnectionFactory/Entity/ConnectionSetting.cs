@@ -23,5 +23,15 @@
         /// Senha do RabbitMQ
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// Porta de conexão
+        /// </summary>
+        public int Port { get; set; }
+
+        public ConnectionSetting()
+        {
+            Port = 5672;
+        }
     }
 }
