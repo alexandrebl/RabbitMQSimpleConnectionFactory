@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using System;
+using RabbitMQ.Client;
 using RabbitMQSimpleConnectionFactory.Entity;
 using System.Collections.Concurrent;
 
@@ -36,6 +37,12 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         }
 
         private void Init(int size, ConnectionSetting connectionSetting, ref IList<IModel> pool) {
+            if (size < 1)
+            {
+                throw new ArgumentOutOfRangeException("size", size,
+                    "size of the connection pool must be equal to or greater than 1");
+            }
+
             for (var position = 0; position < size; position++) {
                 pool.Add(_channelFactory.Create(connectionSetting));
             }
