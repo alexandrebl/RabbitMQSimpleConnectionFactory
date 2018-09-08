@@ -10,9 +10,9 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
         [Fact]
         public void GivenGetChannel_WhenNotSetConnectionSetting_ThenConnectionSettingUseDefault()
         {
-            var connectionSetting = new ConnectionSetting();
+            var connectionSettingActual = new ConnectionSetting();
 
-            var connectionSettingDefault = new ConnectionSetting
+            var connectionSettingDefaultExpected = new ConnectionSetting
             {
                 HostName = "localhost",
                 VirtualHost = "/",
@@ -23,9 +23,21 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
 
             var channelFactory = new ChannelFactory();
 
-            channelFactory.Create(connectionSetting);
+            channelFactory.Create(connectionSettingActual);
 
-            connectionSetting.Should().BeEquivalentTo(connectionSettingDefault);
+            connectionSettingActual.Should().BeEquivalentTo(connectionSettingDefaultExpected);
+        }
+
+        [Fact]
+        public void GivenAChannelOpen_WhenCallMethodToCloseConnection_ThenTheConnectionIsClosed()
+        {
+            var connectionSetting = new ConnectionSetting();
+            var channelFactory = new ChannelFactory();
+            var channel = channelFactory.Create(connectionSetting);
+
+            channelFactory.CloseConnection();
+
+            Assert.True(channel.IsClosed);
         }
     }
 }

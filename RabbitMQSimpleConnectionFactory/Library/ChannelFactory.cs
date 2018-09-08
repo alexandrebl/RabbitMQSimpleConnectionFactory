@@ -16,7 +16,7 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <summary>
         /// Interface de conexão com RabbitMQ
         /// </summary>
-        private static IConnection _connection;
+        public static IConnection _connection;
 
         /// <summary>
         /// Método cria uma conexão com RabbitMQ
@@ -30,9 +30,7 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <returns></returns>
         public IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true, 
             ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
-
-
-
+            
             var factory = new ConnectionFactory {
                 HostName = connectionConfig.HostName,
                 VirtualHost = connectionConfig.VirtualHost,
