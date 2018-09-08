@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using Moq;
+using RabbitMQ.Client;
 using RabbitMQSimpleConnectionFactory.Entity;
 using RabbitMQSimpleConnectionFactory.Library;
 using Xunit;
@@ -7,6 +9,16 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
 {
     public class ChannelFactoryTests
     {
+        private readonly Mock<IConnectionFactory> _mockConnectionFactory;
+
+        private readonly ChannelFactory _channelFactory;
+
+        public ChannelFactoryTests()
+        {
+            _mockConnectionFactory = new Mock<IConnectionFactory>();
+            _channelFactory = new ChannelFactory(_mockConnectionFactory.Object);
+        }
+
         [Fact]
         public void GivenGetChannel_WhenNotSetConnectionSetting_ThenConnectionSettingUseDefault()
         {
@@ -20,24 +32,24 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
                 Password = "guest",
                 Port = 5672
             };
-
-            var channelFactory = new ChannelFactory();
-
-            channelFactory.Create(connectionSettingActual);
+            
+            _channelFactory.Create(connectionSettingActual);
 
             connectionSettingActual.Should().BeEquivalentTo(connectionSettingDefaultExpected);
         }
 
         [Fact]
-        public void GivenAChannelOpen_WhenCallMethodToCloseConnection_ThenTheConnectionIsClosed()
+        public void GivenAConnectionOpen_WhenCallMethodToCloseConnection_ThenTheConnectionReturns()
         {
-            var connectionSetting = new ConnectionSetting();
-            var channelFactory = new ChannelFactory();
-            var channel = channelFactory.Create(connectionSetting);
+            var mockConnection = new Mock<IConnection>();
+            var mockModel = new Mock<IModel>();
 
-            channelFactory.CloseConnection();
+            _mockConnectionFactory.Setup(s => s.CreateConnection()).Returns(mockConnection.Object);
+            mockConnection.Setup(s => s.CreateModel()).Returns(mockModel.Object);
 
-            Assert.True(channel.IsClosed);
+            _channelFactory.CloseConnection();
+
+            Assert.Null(_channelFactory.Connection);
         }
     }
 }

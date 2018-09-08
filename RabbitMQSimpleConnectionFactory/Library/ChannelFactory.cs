@@ -1,13 +1,13 @@
 ﻿using RabbitMQ.Client;
 using RabbitMQSimpleConnectionFactory.Entity;
 
-namespace RabbitMQSimpleConnectionFactory.Library {
+namespace RabbitMQSimpleConnectionFactory.Library
+{
     /// <summary>
     /// Responsável por criar conexões com RabbitMQ
     /// </summary>
     public class ChannelFactory : IChannelFactory
     {
-
         /// <summary>
         /// Objeto
         /// </summary>
@@ -16,7 +16,17 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <summary>
         /// Interface de conexão com RabbitMQ
         /// </summary>
-        public static IConnection _connection;
+        public IConnection Connection;
+
+        /// <summary>
+        /// Interface de construções de conexões do rabbit
+        /// </summary>
+        private IConnectionFactory _connectionFactory;
+
+        public ChannelFactory(IConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+        }
 
         /// <summary>
         /// Método cria uma conexão com RabbitMQ
@@ -28,10 +38,11 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <param name="requestedChannelMax"></param>
         /// <param name="useBackgroundThreadsForIo"></param>
         /// <returns></returns>
-        public IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true, 
-            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
-            
-            var factory = new ConnectionFactory {
+        public IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true,
+            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
+        {
+            _connectionFactory = new ConnectionFactory
+            {
                 HostName = connectionConfig.HostName,
                 VirtualHost = connectionConfig.VirtualHost,
                 UserName = connectionConfig.UserName,
@@ -45,15 +56,18 @@ namespace RabbitMQSimpleConnectionFactory.Library {
                 Protocol = Protocols.AMQP_0_9_1
             };
 
-            if (_connection == null) {
-                lock (SyncObj) {
-                    if (_connection == null) {
-                        _connection = factory.CreateConnection();
+            if (Connection == null)
+            {
+                lock (SyncObj)
+                {
+                    if (Connection == null)
+                    {
+                        Connection = _connectionFactory.CreateConnection();
                     }
                 }
             }
 
-            var channel = _connection.CreateModel();
+            var channel = Connection.CreateModel();
 
             return channel;
         }
@@ -91,10 +105,11 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <summary>
         /// Método responsável por fechar a conexão com RabbitMQ
         /// </summary>
-        public void CloseConnection() {
-            _connection?.Close();
-            _connection?.Dispose();
-            _connection = null;
+        public void CloseConnection()
+        {
+            Connection?.Close();
+            Connection?.Dispose();
+            Connection = null;
         }
     }
 }
