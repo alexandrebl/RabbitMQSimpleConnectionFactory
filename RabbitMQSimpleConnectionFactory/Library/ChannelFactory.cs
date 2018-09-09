@@ -39,7 +39,8 @@ namespace RabbitMQSimpleConnectionFactory.Library {
                 RequestedHeartbeat = requestedHeartbeat,
                 RequestedFrameMax = requestedFrameMax,
                 RequestedChannelMax = requestedChannelMax,
-                UseBackgroundThreadsForIO = useBackgroundThreadsForIo
+                UseBackgroundThreadsForIO = useBackgroundThreadsForIo,
+                Protocol = Protocols.AMQP_0_9_1
             };
 
             if (_connection == null) {
