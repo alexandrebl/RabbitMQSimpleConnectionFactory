@@ -9,18 +9,9 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
 {
     public class ChannelFactoryTests
     {
-        private readonly Mock<IConnectionFactory> _mockConnectionFactory;
-
-        private readonly ChannelFactory _channelFactory;
-
-        public ChannelFactoryTests()
-        {
-            _mockConnectionFactory = new Mock<IConnectionFactory>();
-            _channelFactory = new ChannelFactory(_mockConnectionFactory.Object);
-        }
 
         [Fact]
-        public void GivenGetChannel_WhenNotSetConnectionSetting_ThenConnectionSettingUseDefault()
+        public void GivenCreateConnectionSetting_WhenNotSetConnectionSetting_ThenConnectionSettingUseDefault()
         {
             var connectionSettingActual = new ConnectionSetting();
 
@@ -32,8 +23,31 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
                 Password = "guest",
                 Port = 5672
             };
-            
-            _channelFactory.Create(connectionSettingActual);
+
+            connectionSettingActual.Should().BeEquivalentTo(connectionSettingDefaultExpected);
+        }
+
+
+        [Fact]
+        public void GivenGetChannel_WhenSetConnectionSetting_ThenConnectionSettingUseTheParameterValue()
+        {
+            var connectionSettingActual = new ConnectionSetting
+            {
+                HostName = "HostName",
+                VirtualHost = "VirtualHost",
+                UserName = "UserName",
+                Password = "Password",
+                Port = 1234
+            };
+
+            var connectionSettingDefaultExpected = new ConnectionSetting
+            {
+                HostName = "HostName",
+                VirtualHost = "VirtualHost",
+                UserName = "UserName",
+                Password = "Password",
+                Port = 1234
+            };
 
             connectionSettingActual.Should().BeEquivalentTo(connectionSettingDefaultExpected);
         }
@@ -42,14 +56,30 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
         public void GivenAConnectionOpen_WhenCallMethodToCloseConnection_ThenTheConnectionReturns()
         {
             var mockConnection = new Mock<IConnection>();
-            var mockModel = new Mock<IModel>();
+            var mockRabbitMQSimpleConnectionFactory = new Mock<IRabbitMQSimpleConnectionFactory>();
+            mockRabbitMQSimpleConnectionFactory.Setup(s => s.CreateConnection()).Returns(mockConnection.Object);
 
-            _mockConnectionFactory.Setup(s => s.CreateConnection()).Returns(mockConnection.Object);
-            mockConnection.Setup(s => s.CreateModel()).Returns(mockModel.Object);
+            var channelFactory = new ChannelFactory(mockRabbitMQSimpleConnectionFactory.Object);
+            var connectionSettingActual = new ConnectionSetting();
+            
+            channelFactory.Create(connectionSettingActual);
+            channelFactory.CloseConnection();
 
-            _channelFactory.CloseConnection();
+            Assert.Null(channelFactory.Connection);
+        }
 
-            Assert.Null(_channelFactory.Connection);
+        [Fact]
+        public void GivenTryCreateChannel_WhenConnectionCreationWithRabbitMQServerFails_ThenIsThrowRabbitMQClientExceptionsConnectFailureException()
+        {
+            var mockRabbitMQSimpleConnectionFactory = new Mock<IRabbitMQSimpleConnectionFactory>();
+            var channelFactory = new ChannelFactory(mockRabbitMQSimpleConnectionFactory.Object);
+            var connectionSettingActual = new ConnectionSetting();
+
+            mockRabbitMQSimpleConnectionFactory.Setup(s => s.CreateConnection()).Returns<IConnection>(null);
+
+            var result = Assert.Throws<RabbitMQ.Client.Exceptions.ConnectFailureException>(() => channelFactory.Create(connectionSettingActual));
+
+            Assert.Equal(result.Message, $"Could not create connection to RabbitMQ Server.");
         }
     }
 }

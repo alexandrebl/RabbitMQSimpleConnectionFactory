@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using System;
+using RabbitMQ.Client;
 using RabbitMQSimpleConnectionFactory.Entity;
 
 namespace RabbitMQSimpleConnectionFactory.Library
@@ -19,13 +20,13 @@ namespace RabbitMQSimpleConnectionFactory.Library
         public IConnection Connection;
 
         /// <summary>
-        /// Interface de construções de conexões do rabbit
+        /// Interface de construções de conexões do RabbitMQ
         /// </summary>
-        private IConnectionFactory _connectionFactory;
+        private IRabbitMQSimpleConnectionFactory _rabbitMQSimpleConnectionFactory;
 
-        public ChannelFactory(IConnectionFactory connectionFactory)
+        public ChannelFactory(IRabbitMQSimpleConnectionFactory rabbitMQSimpleConnectionFactory)
         {
-            _connectionFactory = connectionFactory;
+            _rabbitMQSimpleConnectionFactory = rabbitMQSimpleConnectionFactory;
         }
 
         /// <summary>
@@ -41,20 +42,16 @@ namespace RabbitMQSimpleConnectionFactory.Library
         public IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true,
             ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
         {
-            _connectionFactory = new ConnectionFactory
-            {
-                HostName = connectionConfig.HostName,
-                VirtualHost = connectionConfig.VirtualHost,
-                UserName = connectionConfig.UserName,
-                Password = connectionConfig.Password,
-                Port = connectionConfig.Port,
-                AutomaticRecoveryEnabled = automaticRecoveryEnabled,
-                RequestedHeartbeat = requestedHeartbeat,
-                RequestedFrameMax = requestedFrameMax,
-                RequestedChannelMax = requestedChannelMax,
-                UseBackgroundThreadsForIO = useBackgroundThreadsForIo,
-                Protocol = Protocols.AMQP_0_9_1
-            };
+            _rabbitMQSimpleConnectionFactory.HostName = connectionConfig.HostName;
+            _rabbitMQSimpleConnectionFactory.VirtualHost = connectionConfig.VirtualHost;
+            _rabbitMQSimpleConnectionFactory.UserName = connectionConfig.UserName;
+            _rabbitMQSimpleConnectionFactory.Password = connectionConfig.Password;
+            _rabbitMQSimpleConnectionFactory.Port = connectionConfig.Port;
+            _rabbitMQSimpleConnectionFactory.AutomaticRecoveryEnabled = automaticRecoveryEnabled;
+            _rabbitMQSimpleConnectionFactory.RequestedHeartbeat = requestedHeartbeat;
+            _rabbitMQSimpleConnectionFactory.RequestedFrameMax = requestedFrameMax;
+            _rabbitMQSimpleConnectionFactory.RequestedChannelMax = requestedChannelMax;
+            _rabbitMQSimpleConnectionFactory.UseBackgroundThreadsForIO = useBackgroundThreadsForIo;
 
             if (Connection == null)
             {
@@ -62,13 +59,18 @@ namespace RabbitMQSimpleConnectionFactory.Library
                 {
                     if (Connection == null)
                     {
-                        Connection = _connectionFactory.CreateConnection();
+                        Connection = _rabbitMQSimpleConnectionFactory.CreateConnection();
                     }
                 }
             }
 
-            var channel = Connection.CreateModel();
+            if (Connection == null)
+            {
+                throw new RabbitMQ.Client.Exceptions.ConnectFailureException("Could not create connection to RabbitMQ Server.", new Exception());
+            }
 
+            var channel = Connection.CreateModel();
+            
             return channel;
         }
 
