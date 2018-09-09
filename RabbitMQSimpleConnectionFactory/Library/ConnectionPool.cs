@@ -24,6 +24,16 @@ namespace RabbitMQSimpleConnectionFactory.Library {
             }
         }
 
+        private void Close() {
+            for (var position = 0; position < _size; position++)
+            {
+                if (_pool[_index].IsOpen)
+                {
+                    _pool[_index].Close();
+                }
+            }
+        }
+
         private static void Init(int size, ConnectionSetting connectionSetting, ref IList<IModel> pool) {
             for (var position = 0; position < size; position++) {
                 pool.Add(ChannelFactory.Create(connectionSetting));
