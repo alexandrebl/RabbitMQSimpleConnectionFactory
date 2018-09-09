@@ -10,7 +10,7 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
     public class ChannelFactoryTests
     {
 
-        [Fact]
+        [Fact, Trait("Category", "ChannelFactoryTests")]
         public void GivenCreateConnectionSetting_WhenNotSetConnectionSetting_ThenConnectionSettingUseDefault()
         {
             var connectionSettingActual = new ConnectionSetting();
@@ -28,7 +28,7 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
         }
 
 
-        [Fact]
+        [Fact, Trait("Category", "ChannelFactoryTests")]
         public void GivenGetChannel_WhenSetConnectionSetting_ThenConnectionSettingUseTheParameterValue()
         {
             var connectionSettingActual = new ConnectionSetting
@@ -52,7 +52,7 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
             connectionSettingActual.Should().BeEquivalentTo(connectionSettingDefaultExpected);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "ChannelFactoryTests")]
         public void GivenAConnectionOpen_WhenCallMethodToCloseConnection_ThenTheConnectionReturns()
         {
             var mockConnection = new Mock<IConnection>();

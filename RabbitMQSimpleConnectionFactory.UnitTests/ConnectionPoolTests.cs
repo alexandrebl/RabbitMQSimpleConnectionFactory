@@ -13,7 +13,7 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
         private readonly Mock<IModel> _mockModel = new Mock<IModel>();
         private readonly ConnectionSetting _connectionSetting = new ConnectionSetting();
 
-        [Fact]
+        [Fact, Trait("Category", "ConnectionPoolTests")]
         public void GivenTryBuildAPoolOfConnections_WhenTheNumberOfConnectionsIsLessThan1_ThenThrowArgumentOutOfRangeException()
         {
             const int poolSize = 0;
@@ -28,8 +28,8 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
            
             Assert.Throws<ArgumentOutOfRangeException>(() => new ConnectionPool(poolSize, _connectionSetting, _mockChannelFactory.Object));
         }
-        
-        [Fact]
+
+        [Fact, Trait("Category", "ConnectionPoolTests")]
         public void GivenGetChannel_WhenConnectionPoolIsValid_ThenReturnAModelOfConnection()
         {
             const int poolSize = 10;
