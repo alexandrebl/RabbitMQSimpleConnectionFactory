@@ -14,8 +14,9 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         public ConnectionPool(int size, ConnectionSetting connectionSetting) {
             _size = size;
             _pool = new List<IModel>();
-            Init(size, connectionSetting, ref _pool);
             _channelFactory = new ChannelFactory();
+
+            Init(size, connectionSetting, ref _pool);
         }
 
         public IModel GetChannel() {
