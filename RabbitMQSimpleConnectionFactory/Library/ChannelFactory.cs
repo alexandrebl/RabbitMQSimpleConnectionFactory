@@ -5,7 +5,7 @@ namespace RabbitMQSimpleConnectionFactory.Library {
     /// <summary>
     /// Responsável por criar conexões com RabbitMQ
     /// </summary>
-    public class ChannelFactory {
+    public static class ChannelFactory {
 
         /// <summary>
         /// Objeto
@@ -15,7 +15,7 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <summary>
         /// Interface de conexão com RabbitMQ
         /// </summary>
-        private IConnection _connection;
+        private static IConnection _connection;
 
         /// <summary>
         /// Método cria uma conexão com RabbitMQ
@@ -27,7 +27,7 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <param name="requestedChannelMax"></param>
         /// <param name="useBackgroundThreadsForIo"></param>
         /// <returns></returns>
-        public IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true, 
+        public static IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true, 
             ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
             var factory = new ConnectionFactory {
                 HostName = connectionConfig.HostName,
@@ -56,10 +56,40 @@ namespace RabbitMQSimpleConnectionFactory.Library {
             return channel;
         }
 
+        public static IModel Create(IConnection connection, bool automaticRecoveryEnabled = true,
+            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
+
+            var channel = connection.CreateModel();
+
+            return channel;
+        }
+
+        public static IConnection CreateConnection(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true,
+            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
+
+            var factory = new ConnectionFactory {
+                HostName = connectionConfig.HostName,
+                VirtualHost = connectionConfig.VirtualHost,
+                UserName = connectionConfig.UserName,
+                Password = connectionConfig.Password,
+                Port = connectionConfig.Port,
+                AutomaticRecoveryEnabled = automaticRecoveryEnabled,
+                RequestedHeartbeat = requestedHeartbeat,
+                RequestedFrameMax = requestedFrameMax,
+                RequestedChannelMax = requestedChannelMax,
+                UseBackgroundThreadsForIO = useBackgroundThreadsForIo,
+                Protocol = Protocols.AMQP_0_9_1
+            };
+
+            var connection = factory.CreateConnection();
+
+            return connection;
+        }
+
         /// <summary>
         /// Método responsável por fechar a conexão com RabbitMQ
         /// </summary>
-        public  void CloseConnection() {
+        public static void CloseConnection() {
             _connection?.Close();
             _connection?.Dispose();
             _connection = null;
