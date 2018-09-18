@@ -61,7 +61,7 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
 
             var channelFactory = new ChannelFactory(mockRabbitMQSimpleConnectionFactory.Object);
             var connectionSettingActual = new ConnectionSetting();
-            
+
             channelFactory.Create(connectionSettingActual);
             channelFactory.CloseConnection();
 

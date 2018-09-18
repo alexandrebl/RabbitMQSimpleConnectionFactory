@@ -25,7 +25,7 @@ namespace RabbitMQSimpleConnectionFactory.UnitTests
                     It.IsAny<ushort>(),
                     It.IsAny<bool>()))
                 .Returns(_mockModel.Object);
-           
+
             Assert.Throws<ArgumentOutOfRangeException>(() => new ConnectionPool(poolSize, _connectionSetting, _mockChannelFactory.Object));
         }
 

@@ -70,22 +70,28 @@ namespace RabbitMQSimpleConnectionFactory.Library
             }
 
             var channel = Connection.CreateModel();
-            
+
             return channel;
         }
 
         public static IModel Create(IConnection connection, bool automaticRecoveryEnabled = true,
-            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
+            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
+        {
 
             var channel = connection.CreateModel();
 
             return channel;
         }
 
-        public static IConnection CreateConnection(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true,
-            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
-
-            var factory = new ConnectionFactory {
+        public static IConnection CreateConnection(ConnectionSetting connectionConfig, 
+                                                   bool automaticRecoveryEnabled = true,
+                                                   ushort requestedHeartbeat = 15, 
+                                                   uint requestedFrameMax = 0, 
+                                                   ushort requestedChannelMax = 0, 
+                                                   bool useBackgroundThreadsForIo = true)
+        {
+            var factory = new ConnectionFactory
+            {
                 HostName = connectionConfig.HostName,
                 VirtualHost = connectionConfig.VirtualHost,
                 UserName = connectionConfig.UserName,

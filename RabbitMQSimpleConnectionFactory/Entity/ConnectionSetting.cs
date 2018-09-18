@@ -1,16 +1,17 @@
-﻿namespace RabbitMQSimpleConnectionFactory.Entity {
+﻿namespace RabbitMQSimpleConnectionFactory.Entity
+{
     /// <summary>
     /// Classe de configuração de conexão do RabbitMQ
     /// </summary>
-    public sealed class ConnectionSetting {
-
+    public sealed class ConnectionSetting
+    {
         /// <summary>
         /// Descrição do servidor
         /// </summary>
         public string HostName { get; set; }
 
         /// <summary>
-        ///
+        /// Nome do VirtualHost
         /// </summary>
         public string VirtualHost { get; set; }
 
