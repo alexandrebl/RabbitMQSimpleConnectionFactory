@@ -30,7 +30,7 @@ namespace RabbitMQSimpleConnectionFactory.Library
         /// <param name="useBackgroundThreadsForIo"></param>
         /// <returns></returns>
         public static IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true,
-            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
+            ushort requestedHeartbeat = 0, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
         {
             var factory = new ConnectionFactory
             {
@@ -64,7 +64,7 @@ namespace RabbitMQSimpleConnectionFactory.Library
         }
 
         public static IModel Create(IConnection connection, bool automaticRecoveryEnabled = true,
-            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
+            ushort requestedHeartbeat = 0, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
         {
 
             var channel = connection.CreateModel();
@@ -73,7 +73,7 @@ namespace RabbitMQSimpleConnectionFactory.Library
         }
 
         public static IConnection CreateConnection(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true,
-            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
+            ushort requestedHeartbeat = 0, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
         {
 
             var factory = new ConnectionFactory
