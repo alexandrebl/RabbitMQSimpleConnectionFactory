@@ -1,11 +1,13 @@
 ﻿using RabbitMQ.Client;
 using RabbitMQSimpleConnectionFactory.Entity;
 
-namespace RabbitMQSimpleConnectionFactory.Library {
+namespace RabbitMQSimpleConnectionFactory.Library
+{
     /// <summary>
     /// Responsável por criar conexões com RabbitMQ
     /// </summary>
-    public static class ChannelFactory {
+    public static class ChannelFactory
+    {
 
         /// <summary>
         /// Objeto
@@ -27,9 +29,11 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <param name="requestedChannelMax"></param>
         /// <param name="useBackgroundThreadsForIo"></param>
         /// <returns></returns>
-        public static IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true, 
-            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
-            var factory = new ConnectionFactory {
+        public static IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true,
+            ushort requestedHeartbeat = 0, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
+        {
+            var factory = new ConnectionFactory
+            {
                 HostName = connectionConfig.HostName,
                 VirtualHost = connectionConfig.VirtualHost,
                 UserName = connectionConfig.UserName,
@@ -43,9 +47,12 @@ namespace RabbitMQSimpleConnectionFactory.Library {
                 Protocol = Protocols.AMQP_0_9_1
             };
 
-            if (_connection == null) {
-                lock (SyncObj) {
-                    if (_connection == null) {
+            if (_connection == null || !_connection.IsOpen)
+            {
+                lock (SyncObj)
+                {
+                    if (_connection == null || !_connection.IsOpen)
+                    {
                         _connection = factory.CreateConnection();
                     }
                 }
@@ -57,7 +64,8 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         }
 
         public static IModel Create(IConnection connection, bool automaticRecoveryEnabled = true,
-            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
+            ushort requestedHeartbeat = 0, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
+        {
 
             var channel = connection.CreateModel();
 
@@ -65,9 +73,11 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         }
 
         public static IConnection CreateConnection(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true,
-            ushort requestedHeartbeat = 15, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true) {
+            ushort requestedHeartbeat = 0, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
+        {
 
-            var factory = new ConnectionFactory {
+            var factory = new ConnectionFactory
+            {
                 HostName = connectionConfig.HostName,
                 VirtualHost = connectionConfig.VirtualHost,
                 UserName = connectionConfig.UserName,
@@ -89,7 +99,8 @@ namespace RabbitMQSimpleConnectionFactory.Library {
         /// <summary>
         /// Método responsável por fechar a conexão com RabbitMQ
         /// </summary>
-        public static void CloseConnection() {
+        public static void CloseConnection()
+        {
             _connection?.Close();
             _connection?.Dispose();
             _connection = null;
