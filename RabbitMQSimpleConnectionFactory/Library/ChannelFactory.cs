@@ -6,18 +6,25 @@ namespace RabbitMQSimpleConnectionFactory.Library
     /// <summary>
     /// Responsável por criar conexões com RabbitMQ
     /// </summary>
-    public static class ChannelFactory
+    public class ChannelFactory
     {
 
         /// <summary>
         /// Objeto
         /// </summary>
-        private static readonly object SyncObj = new object();
+        private readonly object SyncObj = new object();
 
         /// <summary>
         /// Interface de conexão com RabbitMQ
         /// </summary>
-        private static IConnection _connection;
+        private IConnection _connection;
+
+        private ConnectionSetting _connectionSetting;
+
+        public ChannelFactory(ConnectionSetting connectionConfig)
+        {
+            this._connectionSetting = connectionConfig;
+        }
 
         /// <summary>
         /// Método cria uma conexão com RabbitMQ
@@ -29,16 +36,16 @@ namespace RabbitMQSimpleConnectionFactory.Library
         /// <param name="requestedChannelMax"></param>
         /// <param name="useBackgroundThreadsForIo"></param>
         /// <returns></returns>
-        public static IModel Create(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true,
+        public IModel Create(bool automaticRecoveryEnabled = true,
             ushort requestedHeartbeat = 0, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
         {
             var factory = new ConnectionFactory
             {
-                HostName = connectionConfig.HostName,
-                VirtualHost = connectionConfig.VirtualHost,
-                UserName = connectionConfig.UserName,
-                Password = connectionConfig.Password,
-                Port = connectionConfig.Port,
+                HostName = this._connectionSetting.HostName,
+                VirtualHost = this._connectionSetting.VirtualHost,
+                UserName = this._connectionSetting.UserName,
+                Password = this._connectionSetting.Password,
+                Port = this._connectionSetting.Port,
                 AutomaticRecoveryEnabled = automaticRecoveryEnabled,
                 RequestedHeartbeat = requestedHeartbeat,
                 RequestedFrameMax = requestedFrameMax,
@@ -63,26 +70,17 @@ namespace RabbitMQSimpleConnectionFactory.Library
             return channel;
         }
 
-        public static IModel Create(IConnection connection, bool automaticRecoveryEnabled = true,
-            ushort requestedHeartbeat = 0, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
-        {
-
-            var channel = connection.CreateModel();
-
-            return channel;
-        }
-
-        public static IConnection CreateConnection(ConnectionSetting connectionConfig, bool automaticRecoveryEnabled = true,
+        public IConnection CreateConnection(bool automaticRecoveryEnabled = true,
             ushort requestedHeartbeat = 0, uint requestedFrameMax = 0, ushort requestedChannelMax = 0, bool useBackgroundThreadsForIo = true)
         {
 
             var factory = new ConnectionFactory
             {
-                HostName = connectionConfig.HostName,
-                VirtualHost = connectionConfig.VirtualHost,
-                UserName = connectionConfig.UserName,
-                Password = connectionConfig.Password,
-                Port = connectionConfig.Port,
+                HostName = this._connectionSetting.HostName,
+                VirtualHost = this._connectionSetting.VirtualHost,
+                UserName = this._connectionSetting.UserName,
+                Password = this._connectionSetting.Password,
+                Port = this._connectionSetting.Port,
                 AutomaticRecoveryEnabled = automaticRecoveryEnabled,
                 RequestedHeartbeat = requestedHeartbeat,
                 RequestedFrameMax = requestedFrameMax,
@@ -99,7 +97,7 @@ namespace RabbitMQSimpleConnectionFactory.Library
         /// <summary>
         /// Método responsável por fechar a conexão com RabbitMQ
         /// </summary>
-        public static void CloseConnection()
+        public void CloseConnection()
         {
             _connection?.Close();
             _connection?.Dispose();
