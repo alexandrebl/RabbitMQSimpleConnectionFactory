@@ -20,10 +20,12 @@ namespace RabbitMQSimpleConnectionFactory.Library
         private IConnection _connection;
 
         private ConnectionSetting _connectionSetting;
+        private string _clientProvidedName;
 
-        public ChannelFactory(ConnectionSetting connectionConfig)
+        public ChannelFactory(ConnectionSetting connectionConfig, string clientProvidedName = null)
         {
             this._connectionSetting = connectionConfig;
+            this._clientProvidedName = clientProvidedName;
         }
 
         /// <summary>
@@ -60,7 +62,7 @@ namespace RabbitMQSimpleConnectionFactory.Library
                 {
                     if (_connection == null || !_connection.IsOpen)
                     {
-                        _connection = factory.CreateConnection();
+                        _connection = factory.CreateConnection(this._clientProvidedName);
                     }
                 }
             }
@@ -89,7 +91,7 @@ namespace RabbitMQSimpleConnectionFactory.Library
                 Protocol = Protocols.AMQP_0_9_1
             };
 
-            var connection = factory.CreateConnection();
+            var connection = factory.CreateConnection(this._clientProvidedName);
 
             return connection;
         }
